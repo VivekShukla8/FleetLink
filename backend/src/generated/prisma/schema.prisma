@@ -1,0 +1,151 @@
+// ─────────────────────────────────────────────────────────
+// FleetLink — Prisma Schema (MySQL)
+// ─────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// ─── Enums ───────────────────────────────────────────────
+
+enum Role {
+  CUSTOMER
+  STORE_OWNER
+  ADMIN
+}
+
+enum VehicleCategory {
+  CAR
+  BIKE
+  SCOOTER
+  BICYCLE
+}
+
+enum VehicleStatus {
+  AVAILABLE
+  MAINTENANCE
+}
+
+enum BookingStatus {
+  PENDING
+  PAYMENT_PENDING
+  CONFIRMED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  REJECTED
+}
+
+enum DepositStatus {
+  HELD
+  REFUNDED
+  PARTIALLY_REFUNDED
+  FORFEITED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+// ─── Models ──────────────────────────────────────────────
+
+model User {
+  id        String   @id @default(uuid())
+  clerkId   String   @unique // bridge to Clerk — one Clerk account = one local User
+  name      String
+  email     String   @unique
+  phone     String? // optional: Clerk may not collect phone at signup
+  role      Role     @default(CUSTOMER)
+  createdAt DateTime @default(now())
+
+  // Relations
+  store    Store? // one-to-one: only STORE_OWNER has a store
+  bookings Booking[] // one-to-many: customer's bookings
+}
+
+model Store {
+  id        String   @id @default(uuid())
+  ownerId   String   @unique // one-to-one: one store per owner
+  name      String
+  latitude  Decimal  @db.Decimal(10, 7) // 7 decimal places ≈ ~1cm precision
+  longitude Decimal  @db.Decimal(10, 7) // max 180.xxx fits in 10 total digits
+  address   String   @db.Text
+  createdAt DateTime @default(now())
+
+  // Relations
+  owner    User      @relation(fields: [ownerId], references: [id])
+  vehicles Vehicle[]
+}
+
+model Vehicle {
+  id              String          @id @default(uuid())
+  storeId         String
+  category        VehicleCategory
+  brand           String
+  model           String
+  specs           Json // flexible per-category attributes (validated in service layer)
+  dailyPrice      Decimal         @db.Decimal(10, 2)
+  weeklyPrice     Decimal         @db.Decimal(10, 2)
+  monthlyPrice    Decimal         @db.Decimal(10, 2)
+  maintenanceFee  Decimal         @db.Decimal(10, 2)
+  securityDeposit Decimal         @db.Decimal(10, 2)
+  status          VehicleStatus   @default(AVAILABLE)
+  createdAt       DateTime        @default(now())
+
+  // Relations
+  store    Store     @relation(fields: [storeId], references: [id]) // storeId as foreign key 
+  bookings Booking[]
+
+  @@index([storeId])
+}
+
+model Booking {
+  id             String        @id @default(uuid())
+  userId         String
+  vehicleId      String
+  startDate      DateTime      @db.Date // DATE only, no time — rentals are full days
+  endDate        DateTime      @db.Date
+  status         BookingStatus @default(PENDING)
+  totalPrice     Decimal       @db.Decimal(10, 2)
+  idempotencyKey String        @unique // DB-enforced: prevents duplicate booking on retry/double-click
+  expiresAt      DateTime? // set when status = PAYMENT_PENDING (hold expiry, e.g. +10 min)
+  createdAt      DateTime      @default(now())
+
+  // Price snapshots — frozen at booking time so they survive future price changes
+  maintenanceFeeCharged  Decimal @db.Decimal(10, 2)
+  securityDepositCharged Decimal @db.Decimal(10, 2)
+
+  // Deposit lifecycle — independent of booking status (separate state machine)
+  depositStatus       DepositStatus? // null until payment succeeds → HELD → REFUNDED/etc
+  depositRefundAmount Decimal?       @db.Decimal(10, 2)
+  damageNotes         String?        @db.Text
+
+  // Relations
+  user    User     @relation(fields: [userId], references: [id])
+  vehicle Vehicle  @relation(fields: [vehicleId], references: [id])
+  payment Payment?
+
+  // The critical index: speeds up the overlap check inside the locked transaction
+  // Query: WHERE vehicleId = ? AND status IN ('CONFIRMED','PAYMENT_PENDING','ACTIVE')
+  @@index([vehicleId, status])
+}
+
+model Payment {
+  id                String        @id @default(uuid())
+  bookingId         String        @unique // one-to-one with Booking
+  razorpayOrderId   String        @unique // set when order is created (POST /:id/pay)
+  razorpayPaymentId String?       @unique // null until Razorpay webhook confirms payment
+  amount            Decimal       @db.Decimal(10, 2)
+  status            PaymentStatus @default(PENDING)
+  createdAt         DateTime      @default(now())
+
+  // Relations
+  booking Booking @relation(fields: [bookingId], references: [id])
+}

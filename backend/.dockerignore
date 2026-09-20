@@ -1,0 +1,10 @@
+node_modules
+.env
+.env.docker
+.git
+.gitignore
+*.md
+test-*.js
+.agents
+.claude
+.windsurf
