@@ -1,7 +1,7 @@
 # ═════════════════════════════════════════════════════════
 # FleetLink — Docker Compose
 # ═════════════════════════════════════════════════════════
-# Three services: MySQL + Redis + Backend
+# Four services: MySQL + Redis + RabbitMQ + Backend
 #
 # Usage:
 #   docker-compose up --build        # start all services
@@ -9,9 +9,11 @@
 #   docker-compose down -v           # stop + delete data volumes
 #
 # Port mapping (host → container):
-#   MySQL:   3307 → 3306   (avoids conflict with local MySQL on 3306)
-#   Redis:   6380 → 6379   (avoids conflict with local Redis on 6379)
-#   Backend: 5000 → 5000
+#   MySQL:      3307 → 3306   (avoids conflict with local MySQL on 3306)
+#   Redis:      6380 → 6379   (avoids conflict with local Redis on 6379)
+#   RabbitMQ:   5672 → 5672   (AMQP)
+#               15672 → 15672 (Management UI — http://localhost:15672)
+#   Backend:    5000 → 5000
 
 services:
   # ── MySQL 8.0 ──────────────────────────────────────────
@@ -19,6 +21,7 @@ services:
     image: mysql:8.0
     container_name: fleetlink-mysql
     restart: unless-stopped
+    command: --lower-case-table-names=1    # match Windows casing (Prisma generates mixed-case)
     environment:
       MYSQL_ROOT_PASSWORD: fleetlink_secret
       MYSQL_DATABASE: fleetlink_dev
@@ -45,6 +48,21 @@ services:
     # volumes:
     #   - redis_data:/data
 
+  # ── RabbitMQ 3 (with Management UI) ───────────────────
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: fleetlink-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"         # AMQP protocol
+      - "15672:15672"       # Management UI (guest/guest)
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 20s     # RabbitMQ needs time to start Erlang VM
+
   # ── Backend (Node.js) ──────────────────────────────────
   backend:
     build:
@@ -61,6 +79,9 @@ services:
         condition: service_healthy   # waits until MySQL passes healthcheck
       redis:
         condition: service_started
+      rabbitmq:
+        condition: service_healthy   # waits until RabbitMQ passes healthcheck
 
 volumes:
   mysql_data:               # persistent MySQL data volume
+

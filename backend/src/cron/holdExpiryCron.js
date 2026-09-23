@@ -97,7 +97,8 @@ function startHoldExpiryCron() {
   // Fields: minute hour day-of-month month day-of-week
   task = cron.schedule('*/1 * * * *', expireStaleHolds, {
     scheduled: true,
-    timezone: 'Asia/Kolkata', // Match the server's timezone
+    timezone: 'Asia/Kolkata',             // Match the server's timezone
+    recoverMissedExecutions: false,       // Skip missed ticks (e.g., laptop sleep) silently
   });
 
   console.log('🕐 Hold expiry cron started (runs every 60 seconds)');

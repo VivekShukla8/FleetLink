@@ -17,6 +17,7 @@
 
 const crypto = require('crypto');
 const prisma = require('../config/prisma');
+const { publishToQueue } = require('../config/rabbitmq');
 
 const handleWebhook = async (req, res) => {
   // ────────────────────────────────────────────────────────
@@ -136,7 +137,14 @@ const handleWebhook = async (req, res) => {
 
   const payment = await prisma.payment.findUnique({
     where: { razorpayOrderId },
-    include: { booking: true },
+    include: {
+      booking: {
+        include: {
+          user: true,     // need email + name for confirmation email
+          vehicle: true,  // need brand + model for email content
+        },
+      },
+    },
   });
 
   if (!payment) {
@@ -203,6 +211,39 @@ const handleWebhook = async (req, res) => {
     console.log(
       `✅ Payment confirmed: booking=${payment.bookingId} razorpayPayment=${razorpayPaymentId}`
     );
+
+    // ──────────────────────────────────────────────────────
+    // STEP 7: Publish "booking-confirmed" event to RabbitMQ
+    // ──────────────────────────────────────────────────────
+    // This happens AFTER the MySQL transaction has committed.
+    // The two systems (MySQL + RabbitMQ) can't share atomicity
+    // — if this publish fails, the booking is still confirmed
+    // but the customer won't get an email. We log the failure
+    // so it can be resent manually. See implementation plan Q1.
+    //
+    // CRITICAL: This must NOT throw or delay the 200 response
+    // to Razorpay. publishToQueue() catches errors internally.
+
+    const { booking } = payment;
+    const published = await publishToQueue('booking-confirmed', {
+      bookingId:  booking.id,
+      userEmail:  booking.user.email,
+      userName:   booking.user.name,
+      brand:      booking.vehicle.brand,
+      model:      booking.vehicle.model,
+      category:   booking.vehicle.category,
+      startDate:  booking.startDate,
+      endDate:    booking.endDate,
+      totalPrice: booking.totalPrice.toString(),
+      deposit:    booking.securityDepositCharged.toString(),
+    });
+
+    if (!published) {
+      console.error(
+        `⚠️  RabbitMQ publish failed for booking ${booking.id} — email will not be sent. ` +
+        `Manual resend may be needed.`
+      );
+    }
 
     return res.status(200).json({ status: 'processed', bookingId: payment.bookingId });
   } catch (err) {
