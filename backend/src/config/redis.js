@@ -23,7 +23,7 @@ try {
   const port = parseInt(process.env.REDIS_PORT, 10) || 6379;
   const password = process.env.REDIS_PASSWORD || undefined;
 
-  redis = new Redis({
+  const redisOptions = {
     host,
     port,
     password,
@@ -34,7 +34,14 @@ try {
     },
     lazyConnect: false,               // connect immediately
     enableOfflineQueue: false,        // don't queue commands when disconnected
-  });
+  };
+
+  // Enable TLS for production (Upstash requires it)
+  if (process.env.REDIS_TLS === 'true') {
+    redisOptions.tls = {};
+  }
+
+  redis = new Redis(redisOptions);
 
   redis.on('connect', () => {
     isReady = true;

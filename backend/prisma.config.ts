@@ -3,12 +3,18 @@
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
+// Ensure DATABASE_URL has SSL for TiDB Cloud
+let dbUrl = process.env["DATABASE_URL"] || "";
+if (dbUrl && !dbUrl.includes("ssl") && !dbUrl.includes("sslaccept")) {
+  dbUrl += dbUrl.includes("?") ? "&sslaccept=strict" : "?sslaccept=strict";
+}
+
 export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    url: dbUrl,
   },
 });
