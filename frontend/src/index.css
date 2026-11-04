@@ -4251,3 +4251,14 @@ img {
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Footer logo text ────────────────────────────────── */
+.footer-logo-text {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--color-text);
+  margin-bottom: 0.75rem;
+}

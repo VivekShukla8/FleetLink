@@ -304,17 +304,17 @@ function StoreDashboard() {
                 <span className="dash-action-icon">🚗</span>
                 <span>Add Vehicle</span>
               </Link>
-              <Link to="/store/dashboard" className="dash-action-card">
-                <span className="dash-action-icon">🏪</span>
-                <span>Manage Stores</span>
-              </Link>
               <Link to="/store/bookings" className="dash-action-card">
                 <span className="dash-action-icon">📅</span>
                 <span>View Bookings</span>
               </Link>
-              <Link to="/store/dashboard" className="dash-action-card">
-                <span className="dash-action-icon">📈</span>
-                <span>View Analytics</span>
+              <Link to="/vehicles" className="dash-action-card">
+                <span className="dash-action-icon">🔍</span>
+                <span>Browse Vehicles</span>
+              </Link>
+              <Link to="/my-bookings" className="dash-action-card">
+                <span className="dash-action-icon">📋</span>
+                <span>My Bookings</span>
               </Link>
             </div>
           </div>

@@ -1,7 +1,8 @@
 // ─────────────────────────────────────────────────────────
 // TopBar — Horizontal bar above main content
 // ─────────────────────────────────────────────────────────
-// Shows search bar (Ctrl+K) + user profile area.
+// Shows page context on left + user profile on right.
+// Search bar lives only on BrowseVehiclesPage.
 
 import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react'
 import { useLocalUser } from '../context/UserContext.jsx'
@@ -10,7 +11,6 @@ import { Link } from 'react-router-dom'
 function TopBar() {
   const { localUser } = useLocalUser()
 
-  // Role label for display
   const roleLabel = {
     CUSTOMER: 'Customer',
     STORE_OWNER: 'Fleet Manager',
@@ -19,27 +19,12 @@ function TopBar() {
 
   return (
     <header className="topbar">
-      {/* ── Search Bar ──────────────────────────────── */}
-      <div className="topbar-search">
-        <span className="topbar-search-icon">🔍</span>
-        <input
-          type="text"
-          placeholder="Search vehicles, stores, or bookings..."
-          className="topbar-search-input"
-          readOnly
-        />
-        <kbd className="topbar-kbd">Ctrl + K</kbd>
-      </div>
+      {/* Left side — empty spacer (pages can add breadcrumbs later) */}
+      <div />
 
-      {/* ── Right: User Profile ────────────────────── */}
+      {/* ── Right: User Profile ────────────────────────── */}
       <div className="topbar-right">
         <SignedIn>
-          {/* Notification bell */}
-          <button className="topbar-icon-btn" title="Notifications">
-            🔔
-          </button>
-
-          {/* User info */}
           <div className="topbar-user">
             <div className="topbar-user-info">
               <span className="topbar-user-name">
@@ -71,4 +56,3 @@ function TopBar() {
 }
 
 export default TopBar
-

@@ -7,7 +7,7 @@
 import { Link, useLocation } from 'react-router-dom'
 import { SignedIn, SignedOut } from '@clerk/clerk-react'
 import { useLocalUser } from '../context/UserContext.jsx'
-import logoSvg from '../assets/logo.svg'
+import logoImg from '../assets/logo-generated.jpg'
 
 function Sidebar() {
   const location = useLocation()
@@ -20,7 +20,7 @@ function Sidebar() {
       {/* ── Logo ─────────────────────────────────────── */}
       <div className="sidebar-logo-area">
         <Link to="/" className="sidebar-logo">
-          <img src={logoSvg} alt="FleetLink" className="sidebar-logo-img" />
+          <img src={logoImg} alt="FleetLink" className="sidebar-logo-img" />
         </Link>
       </div>
 
@@ -53,21 +53,6 @@ function Sidebar() {
               <Link to="/store/bookings" className={isActive('/store/bookings')}>
                 <span className="sidebar-icon">📦</span>
                 Store Bookings
-              </Link>
-
-              <Link to="/store/dashboard" className={isActive('/store/analytics')}>
-                <span className="sidebar-icon">📈</span>
-                Analytics
-              </Link>
-
-              <Link to="/store/dashboard" className={isActive('/store/fleet')}>
-                <span className="sidebar-icon">🚗</span>
-                Manage Fleet
-              </Link>
-
-              <Link to="/store/dashboard" className={isActive('/store/stores')}>
-                <span className="sidebar-icon">🏪</span>
-                Stores
               </Link>
             </>
           )}
