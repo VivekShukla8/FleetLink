@@ -1,35 +1,42 @@
 // ─────────────────────────────────────────────────────────
-// Sidebar — Left navigation panel (replaces top Navbar)
+// Sidebar — Left navigation panel
 // ─────────────────────────────────────────────────────────
-// Matches the reference design: dark gradient sidebar with
-// logo at top, nav links with icons, role-based visibility.
+// Matches reference: dark gradient, logo card at top,
+// nav links with icons, road illustration at bottom.
+// Only links to pages that exist in the app.
 
 import { Link, useLocation } from 'react-router-dom'
 import { SignedIn, SignedOut } from '@clerk/clerk-react'
 import { useLocalUser } from '../context/UserContext.jsx'
-import logoImg from '../assets/logo-generated.jpg'
+import logoSvg from '../assets/logo.svg'
 
 function Sidebar() {
   const location = useLocation()
   const { isCustomer, isStoreOwner, isUserLoaded } = useLocalUser()
 
-  const isActive = (path) => location.pathname === path ? 'sidebar-link active' : 'sidebar-link'
+  const isActive = (path) =>
+    location.pathname === path ? 'sidebar-link active' : 'sidebar-link'
 
   return (
     <aside className="sidebar">
-      {/* ── Logo ─────────────────────────────────────── */}
+      {/* ── Logo Card ────────────────────────────────── */}
       <div className="sidebar-logo-area">
-        <Link to="/" className="sidebar-logo">
-          <img src={logoImg} alt="FleetLink" className="sidebar-logo-img" />
+        <Link to="/" className="sidebar-logo-card">
+          <img src={logoSvg} alt="FleetLink" className="sidebar-logo-img" />
         </Link>
       </div>
 
       {/* ── Navigation ───────────────────────────────── */}
       <nav className="sidebar-nav">
-        <Link to="/store/dashboard" className={isActive('/store/dashboard')}>
-          <span className="sidebar-icon">📊</span>
-          Dashboard
-        </Link>
+        {/* Store owner: Dashboard first */}
+        <SignedIn>
+          {isUserLoaded && isStoreOwner && (
+            <Link to="/store/dashboard" className={isActive('/store/dashboard')}>
+              <span className="sidebar-icon">📊</span>
+              Dashboard
+            </Link>
+          )}
+        </SignedIn>
 
         <Link to="/" className={isActive('/')}>
           <span className="sidebar-icon">🏠</span>
@@ -47,17 +54,13 @@ function Sidebar() {
             My Bookings
           </Link>
 
-          {/* STORE_OWNER links */}
           {isUserLoaded && isStoreOwner && (
-            <>
-              <Link to="/store/bookings" className={isActive('/store/bookings')}>
-                <span className="sidebar-icon">📦</span>
-                Store Bookings
-              </Link>
-            </>
+            <Link to="/store/bookings" className={isActive('/store/bookings')}>
+              <span className="sidebar-icon">📦</span>
+              Store Bookings
+            </Link>
           )}
 
-          {/* CUSTOMER only: upgrade CTA */}
           {isUserLoaded && isCustomer && (
             <Link to="/list-your-fleet" className={isActive('/list-your-fleet')}>
               <span className="sidebar-icon">🏪</span>
@@ -67,7 +70,7 @@ function Sidebar() {
         </SignedIn>
       </nav>
 
-      {/* ── Bottom: Sign In (when signed out) ────────── */}
+      {/* ── Bottom: Auth buttons (signed out) ─────────── */}
       <SignedOut>
         <div className="sidebar-bottom">
           <Link to="/sign-in" className="sidebar-signin-btn">
@@ -78,9 +81,11 @@ function Sidebar() {
           </Link>
         </div>
       </SignedOut>
+
+      {/* ── Road illustration (CSS-driven) ───────────── */}
+      <div className="sidebar-road-art" />
     </aside>
   )
 }
 
 export default Sidebar
-
