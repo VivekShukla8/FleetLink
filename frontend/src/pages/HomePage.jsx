@@ -207,9 +207,9 @@ function HomePage() {
       <footer className="footer">
         <div className="footer-content">
           <div className="footer-brand">
-            <div className="navbar-logo">
-              <span className="navbar-logo-icon">🚗</span>
-              FleetLink
+            <div className="footer-logo-text">
+              <span style={{ fontSize: '1.3rem' }}>🚗</span>
+              <strong>FleetLink</strong>
             </div>
             <p>
               Your trusted platform to rent vehicles from
