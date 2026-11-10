@@ -20,6 +20,7 @@ import StoreBookingsPage from './pages/StoreBookingsPage.jsx'
 
 function App() {
   const location = useLocation()
+  const isHomePage = location.pathname === '/'
 
   // Auth pages get a full-screen layout (no sidebar)
   const isAuthPage = location.pathname.startsWith('/sign-in') ||
@@ -37,7 +38,7 @@ function App() {
   }
 
   return (
-    <div className="app app--dashboard">
+    <div className={`app app--dashboard${isHomePage ? ' app--home' : ''}`}>
       {/* ── Left Sidebar ──────────────────────────────── */}
       <Sidebar />
 
