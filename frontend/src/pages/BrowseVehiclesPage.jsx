@@ -13,7 +13,8 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { getVehicleImage, CATEGORY_EMOJI } from '../utils/vehicleImage'
+import { getVehicleImage } from '../utils/vehicleImage'
+import AppIcon, { VehicleIcon } from '../components/AppIcon.jsx'
 
 // ── Leaflet imports + Vite marker icon fix ───────────────
 import 'leaflet/dist/leaflet.css'
@@ -46,20 +47,18 @@ const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 const CATEGORIES = ['ALL', 'CAR', 'BIKE', 'SCOOTER', 'BICYCLE']
 
-// CATEGORY_EMOJI imported from ../utils/vehicleImage
-
 // Helper: extract human-readable spec tags from vehicle.specs
 function getSpecTags(vehicle) {
   const tags = []
   const s = vehicle.specs || {}
 
-  if (s.seats) tags.push(`🪑 ${s.seats} Seater`)
-  if (s.transmission) tags.push(`⚙️ ${s.transmission}`)
-  if (s.fuelType) tags.push(`⛽ ${s.fuelType}`)
-  if (s.engineCC) tags.push(`🔧 ${s.engineCC}cc`)
-  if (s.type) tags.push(`🚲 ${s.type}`)
-  if (s.gearCount) tags.push(`⚙️ ${s.gearCount} Gears`)
-  if (s.batteryRangeKm) tags.push(`🔋 ${s.batteryRangeKm}km`)
+  if (s.seats) tags.push({ icon: 'seat', label: `${s.seats} Seater` })
+  if (s.transmission) tags.push({ icon: 'settings', label: s.transmission })
+  if (s.fuelType) tags.push({ icon: 'wrench', label: s.fuelType })
+  if (s.engineCC) tags.push({ icon: 'settings', label: `${s.engineCC}cc` })
+  if (s.type) tags.push({ icon: 'bicycle', label: s.type })
+  if (s.gearCount) tags.push({ icon: 'settings', label: `${s.gearCount} Gears` })
+  if (s.batteryRangeKm) tags.push({ icon: 'battery', label: `${s.batteryRangeKm}km` })
 
   return tags.slice(0, 3) // max 3 tags per card
 }
@@ -225,7 +224,7 @@ function BrowseVehiclesPage() {
                   {store.vehicles[0] && (
                     <>
                       <div className="bv-popup-emoji">
-                        {CATEGORY_EMOJI[store.vehicles[0].category] || '🚗'}
+                        <VehicleIcon category={store.vehicles[0].category} size={28} />
                       </div>
                       <h4 className="bv-popup-title">
                         {store.vehicles[0].brand} {store.vehicles[0].model}
@@ -256,7 +255,7 @@ function BrowseVehiclesPage() {
         </div>
 
         <div className="bv-search-input-wrap">
-          <span className="bv-search-icon">🔍</span>
+          <span className="bv-search-icon"><AppIcon name="search" size={18} /></span>
           <input
             type="text"
             className="bv-search-input"
@@ -273,9 +272,11 @@ function BrowseVehiclesPage() {
               className={`bv-chip ${categoryFilter === cat ? 'bv-chip-active' : ''}`}
               onClick={() => handleCategoryChange(cat)}
             >
-              {cat === 'ALL'
-                ? `📋 All (${pagination.total})`
-                : `${CATEGORY_EMOJI[cat]} ${cat.charAt(0) + cat.slice(1).toLowerCase()}`}
+              {cat === 'ALL' ? (
+                <><AppIcon name="grid" size={16} /> All ({pagination.total})</>
+              ) : (
+                <><VehicleIcon category={cat} size={16} /> {cat.charAt(0) + cat.slice(1).toLowerCase()}</>
+              )}
             </button>
           ))}
         </div>
@@ -287,7 +288,7 @@ function BrowseVehiclesPage() {
           className="bv-toggle-btn"
           onClick={() => setViewMode(viewMode === 'map' ? 'list' : 'map')}
         >
-          {viewMode === 'map' ? '📋 List View' : '🗺️ Map/List View'}
+          <><AppIcon name={viewMode === 'map' ? 'list' : 'map'} size={16} /> {viewMode === 'map' ? 'List View' : 'Map View'}</>
         </button>
       </div>
 
@@ -296,7 +297,7 @@ function BrowseVehiclesPage() {
         {/* Error */}
         {error && (
           <div className="fleet-error-banner" style={{ margin: '0 1rem 0.5rem' }}>
-            <span className="fleet-error-icon">⚠️</span>
+            <span className="fleet-error-icon"><AppIcon name="alert" size={18} /></span>
             {error}
             <button
               onClick={() => fetchVehicles(1, categoryFilter)}
@@ -318,7 +319,7 @@ function BrowseVehiclesPage() {
         {/* Empty */}
         {!isLoading && !error && filteredVehicles.length === 0 && (
           <div className="bv-carousel-empty">
-            <span>🔍</span>
+            <AppIcon name="search" size={24} />
             <p>
               {searchQuery
                 ? `No results for "${searchQuery}".`
@@ -367,7 +368,7 @@ function BrowseVehiclesPage() {
 
                       {vehicle.store && (
                         <p className="bv-card-store">
-                          📍 {vehicle.store.name}
+                          <AppIcon name="pin" size={14} /> {vehicle.store.name}
                         </p>
                       )}
 
@@ -375,7 +376,7 @@ function BrowseVehiclesPage() {
                       {specTags.length > 0 && (
                         <div className="bv-card-specs">
                           {specTags.map((tag, i) => (
-                            <span key={i} className="bv-spec-tag">{tag}</span>
+                            <span key={i} className="bv-spec-tag"><AppIcon name={tag.icon} size={13} /> {tag.label}</span>
                           ))}
                         </div>
                       )}
@@ -413,7 +414,7 @@ function BrowseVehiclesPage() {
       {/* ── Overlay: Store count badge (bottom-right) ──── */}
       {!isLoading && filteredVehicles.length > 0 && viewMode === 'map' && (
         <div className="bv-map-badge">
-          📍 {uniqueStores.length} store{uniqueStores.length !== 1 ? 's' : ''} •{' '}
+          <AppIcon name="pin" size={14} /> {uniqueStores.length} store{uniqueStores.length !== 1 ? 's' : ''} •{' '}
           {filteredVehicles.length} vehicle{filteredVehicles.length !== 1 ? 's' : ''} in this area
         </div>
       )}
@@ -439,12 +440,12 @@ function BrowseVehiclesPage() {
                         {vehicle.brand} {vehicle.model}
                       </h3>
                       {vehicle.store && (
-                        <p className="bv-card-store">📍 {vehicle.store.name}</p>
+                        <p className="bv-card-store"><AppIcon name="pin" size={14} /> {vehicle.store.name}</p>
                       )}
                       {specTags.length > 0 && (
                         <div className="bv-card-specs">
                           {specTags.map((tag, i) => (
-                            <span key={i} className="bv-spec-tag">{tag}</span>
+                            <span key={i} className="bv-spec-tag"><AppIcon name={tag.icon} size={13} /> {tag.label}</span>
                           ))}
                         </div>
                       )}

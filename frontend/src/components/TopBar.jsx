@@ -7,6 +7,7 @@
 import { SignedIn, SignedOut, UserButton } from '@clerk/clerk-react'
 import { useLocalUser } from '../context/UserContext.jsx'
 import { Link } from 'react-router-dom'
+import AppIcon from './AppIcon.jsx'
 
 function TopBar() {
   const { localUser } = useLocalUser()
@@ -46,8 +47,8 @@ function TopBar() {
         </SignedIn>
 
         <SignedOut>
-          <Link to="/sign-in" className="btn btn-primary" style={{ padding: '0.5rem 1.2rem', fontSize: '0.85rem' }}>
-            Sign In
+          <Link to="/sign-in" className="btn btn-primary topbar-signin-btn">
+            <AppIcon name="user" size={16} /> Sign in
           </Link>
         </SignedOut>
       </div>

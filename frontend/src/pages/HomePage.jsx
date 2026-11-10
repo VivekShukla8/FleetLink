@@ -1,39 +1,7 @@
 import { Link } from 'react-router-dom'
 import { SignedIn, SignedOut } from '@clerk/clerk-react'
 import heroBackdrop from '../assets/hero-night-violet.png'
-
-const iconPaths = {
-  store: <><path d="M3 10h18l-1.5-6h-15L3 10Z" /><path d="M5 10v10h14V10M9 20v-6h6v6M3 10v2a2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0 2 2 0 0 0 4 0v-2" /></>,
-  car: <><path d="m5 11 1.4-4.1A2 2 0 0 1 8.3 5.5h7.4a2 2 0 0 1 1.9 1.4L19 11" /><path d="M3.5 11h17v6.5h-17zM5.5 17.5v2M18.5 17.5v2" /><circle cx="7.5" cy="17.5" r="2" /><circle cx="16.5" cy="17.5" r="2" /><path d="M4 13h3m10 0h3" /></>,
-  bike: <><circle cx="5.5" cy="17.5" r="3" /><circle cx="18.5" cy="17.5" r="3" /><path d="m5.5 17.5 4-7h4l5 7m-9-7 4 7h5M9 10H6m6-3h3m-2 0 2 3" /></>,
-  scooter: <><circle cx="6" cy="18" r="2.5" /><circle cx="18" cy="18" r="2.5" /><path d="M6 18h8l-2-8h3l2 8M12 10l1-4h3m-4 12V8" /><path d="M4 10h5" /></>,
-  bicycle: <><circle cx="5.5" cy="17.5" r="3" /><circle cx="18.5" cy="17.5" r="3" /><path d="m5.5 17.5 4-7h4l5 7m-9-7 4 7h5M9 10H6m6-3h3m-2 0 2 3" /></>,
-  riders: <><circle cx="9" cy="8" r="3" /><path d="M3.5 19a5.5 5.5 0 0 1 11 0M16 5.5a3 3 0 0 1 0 5.8M17 14a5 5 0 0 1 3.5 5" /></>,
-  user: <><circle cx="12" cy="8" r="3.5" /><path d="M4.5 20a7.5 7.5 0 0 1 15 0" /></>,
-  search: <><circle cx="10.8" cy="10.8" r="6.8" /><path d="m16 16 4.5 4.5" /></>,
-  shield: <><path d="M12 3 20 6v5.5c0 4.7-3.1 7.8-8 9.5-4.9-1.7-8-4.8-8-9.5V6l8-3Z" /><path d="m8.5 12 2.2 2.2 4.8-4.8" /></>,
-  arrow: <><path d="M5 12h14M13 6l6 6-6 6" /></>,
-  spark: <><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z" /><path d="m19 15 .9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15Z" /></>,
-}
-
-function Icon({ name, size = 24, className = '' }) {
-  return (
-    <svg
-      aria-hidden="true"
-      className={className}
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      {iconPaths[name]}
-    </svg>
-  )
-}
+import AppIcon from '../components/AppIcon.jsx'
 
 const steps = [
   {
@@ -73,7 +41,7 @@ function HomePage() {
         <div className="hero-content home-hero-content">
           <div className="hero-text home-hero-text">
             <div className="hero-badge home-hero-badge">
-              <span className="hero-badge-icon"><Icon name="spark" size={17} /></span>
+              <span className="hero-badge-icon"><AppIcon name="spark" size={17} /></span>
               Your next ride is closer than you think
             </div>
 
@@ -89,7 +57,7 @@ function HomePage() {
 
             <div className="hero-actions home-hero-actions">
               <Link to="/vehicles" className="btn btn-primary home-primary-btn">
-                Browse vehicles <Icon name="arrow" size={18} />
+                Browse vehicles <AppIcon name="arrow" size={18} />
               </Link>
 
               <SignedOut>
@@ -106,40 +74,40 @@ function HomePage() {
             </div>
 
             <div className="home-trust-note">
-              <span className="home-trust-icon"><Icon name="shield" size={17} /></span>
+              <span className="home-trust-icon"><AppIcon name="shield" size={17} /></span>
               Secure payments <span className="home-trust-dot" /> Trusted local stores
             </div>
           </div>
 
         </div>
         <div className="home-hero-callout home-hero-callout-store">
-          <span className="home-callout-icon"><Icon name="store" size={19} /></span>
+          <span className="home-callout-icon"><AppIcon name="store" size={19} /></span>
           <span><strong>Local rentals</strong><small>Ready when you are</small></span>
         </div>
         <div className="home-hero-callout home-hero-callout-secure">
-          <span className="home-callout-icon"><Icon name="shield" size={18} /></span>
+          <span className="home-callout-icon"><AppIcon name="shield" size={18} /></span>
           <span><strong>Easy & secure</strong><small>Book with confidence</small></span>
         </div>
       </section>
 
       <div className="stats-bar home-stats">
         <div className="stat-item home-stat-item">
-          <div className="stat-icon home-stat-icon"><Icon name="store" size={22} /></div>
+          <div className="stat-icon home-stat-icon"><AppIcon name="store" size={22} /></div>
           <div className="stat-content"><h3>50+</h3><p>Rental stores</p></div>
         </div>
         <div className="stat-divider" />
         <div className="stat-item home-stat-item">
-          <div className="stat-icon home-stat-icon"><Icon name="bike" size={22} /></div>
+          <div className="stat-icon home-stat-icon"><AppIcon name="bike" size={22} /></div>
           <div className="stat-content"><h3>4</h3><p>Ride categories</p></div>
         </div>
         <div className="stat-divider" />
         <div className="stat-item home-stat-item">
-          <div className="stat-icon home-stat-icon"><Icon name="car" size={22} /></div>
+          <div className="stat-icon home-stat-icon"><AppIcon name="car" size={22} /></div>
           <div className="stat-content"><h3>200+</h3><p>Vehicles</p></div>
         </div>
         <div className="stat-divider" />
         <div className="stat-item home-stat-item">
-          <div className="stat-icon home-stat-icon"><Icon name="riders" size={22} /></div>
+          <div className="stat-icon home-stat-icon"><AppIcon name="riders" size={22} /></div>
           <div className="stat-content"><h3>1000+</h3><p>Happy riders</p></div>
         </div>
       </div>
@@ -155,7 +123,7 @@ function HomePage() {
           {steps.map((step) => (
             <article className="how-card home-how-card" key={step.number}>
               <span className="how-card-number">{step.number}</span>
-              <div className="how-card-icon home-step-icon"><Icon name={step.icon} size={25} /></div>
+              <div className="how-card-icon home-step-icon"><AppIcon name={step.icon} size={25} /></div>
               <h3>{step.title}</h3>
               <p>{step.description}</p>
             </article>
@@ -170,17 +138,17 @@ function HomePage() {
             <h2>Find a ride for every plan</h2>
           </div>
           <Link to="/vehicles" className="view-all-link home-view-all">
-            View all vehicles <Icon name="arrow" size={17} />
+            View all vehicles <AppIcon name="arrow" size={17} />
           </Link>
         </div>
 
         <div className="categories-grid home-categories-grid">
           {categories.map((category) => (
             <Link to={`/vehicles?category=${category.key}`} className="category-card home-category-card" key={category.key}>
-              <div className="category-icon home-category-icon"><Icon name={category.icon} size={29} /></div>
+              <div className="category-icon home-category-icon"><AppIcon name={category.icon} size={29} /></div>
               <h3>{category.name}</h3>
               <p>{category.detail}</p>
-              <span className="home-category-arrow"><Icon name="arrow" size={17} /></span>
+              <span className="home-category-arrow"><AppIcon name="arrow" size={17} /></span>
             </Link>
           ))}
         </div>
@@ -188,7 +156,7 @@ function HomePage() {
 
       <section className="section home-section home-cta-section">
         <div className="cta-banner home-cta-banner">
-          <div className="home-cta-mark"><Icon name="spark" size={24} /></div>
+          <div className="home-cta-mark"><AppIcon name="spark" size={24} /></div>
           <div className="cta-text home-cta-text">
             <SignedOut>
               <span className="home-cta-eyebrow">Your journey starts here</span>
@@ -205,13 +173,13 @@ function HomePage() {
 
           <SignedOut>
             <Link to="/sign-up" className="btn-cta home-cta-button">
-              Get started <Icon name="arrow" size={18} />
+              Get started <AppIcon name="arrow" size={18} />
             </Link>
           </SignedOut>
 
           <SignedIn>
             <Link to="/list-your-fleet" className="btn-cta home-cta-button">
-              List your fleet <Icon name="arrow" size={18} />
+              List your fleet <AppIcon name="arrow" size={18} />
             </Link>
           </SignedIn>
         </div>
@@ -221,7 +189,7 @@ function HomePage() {
         <div className="footer-content home-footer-content">
           <div className="footer-brand home-footer-brand">
             <div className="footer-logo-text home-footer-logo">
-              <span className="home-footer-mark"><Icon name="car" size={19} /></span>
+              <span className="home-footer-mark"><AppIcon name="car" size={19} /></span>
               <strong>FleetLink</strong>
             </div>
             <p>Your trusted platform to rent from local stores and explore the road ahead.</p>

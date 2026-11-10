@@ -11,9 +11,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
+import AppIcon, { VehicleIcon } from '../components/AppIcon.jsx'
 import {
   BOOKING_STATUS_STYLES,
-  CATEGORY_EMOJI,
   getVehicleImage,
   formatDateRange,
   formatPrice,
@@ -104,7 +104,7 @@ function MyBookingsPage() {
       {/* ── Error banner ────────────────────────────────── */}
       {error && (
         <div className="mb-error">
-          <span>⚠️</span> {error}
+          <span><AppIcon name="alert" size={18} /></span> {error}
           <button className="mb-error-dismiss" onClick={() => setError(null)}>✕</button>
         </div>
       )}
@@ -120,7 +120,7 @@ function MyBookingsPage() {
       {/* ── Empty state ─────────────────────────────────── */}
       {!isLoading && !error && bookings.length === 0 && (
         <div className="mb-empty">
-          <div className="mb-empty-icon">📋</div>
+          <div className="mb-empty-icon"><AppIcon name="calendar" size={30} /></div>
           <h3>No bookings found</h3>
           <p>
             {statusFilter
@@ -171,7 +171,6 @@ function MyBookingsPage() {
 function BookingCard({ booking }) {
   const vehicle = booking.vehicle
   const statusStyle = BOOKING_STATUS_STYLES[booking.status] || BOOKING_STATUS_STYLES.PENDING
-  const emoji = CATEGORY_EMOJI[vehicle?.category] || '🚗'
   const duration = getDurationDays(booking.startDate, booking.endDate)
 
   return (
@@ -188,7 +187,7 @@ function BookingCard({ booking }) {
             <h3 className="mb-card-name">
               {vehicle?.brand} {vehicle?.model}
             </h3>
-            <p className="mb-card-category">{vehicle?.category}</p>
+            <p className="mb-card-category"><VehicleIcon category={vehicle?.category} size={14} /> {vehicle?.category}</p>
           </div>
         </div>
         <span
@@ -202,7 +201,7 @@ function BookingCard({ booking }) {
       {/* Middle: dates + store */}
       <div className="mb-card-details">
         <div className="mb-card-detail-row">
-          <span className="mb-card-label">📅 Dates</span>
+          <span className="mb-card-label"><AppIcon name="calendar" size={14} /> Dates</span>
           <span className="mb-card-value">
             {formatDateRange(booking.startDate, booking.endDate)}
             <span className="mb-card-duration"> ({duration} day{duration !== 1 ? 's' : ''})</span>
@@ -210,7 +209,7 @@ function BookingCard({ booking }) {
         </div>
         {vehicle?.store && (
           <div className="mb-card-detail-row">
-            <span className="mb-card-label">📍 Store</span>
+            <span className="mb-card-label"><AppIcon name="pin" size={14} /> Store</span>
             <span className="mb-card-value">{vehicle.store.name}</span>
           </div>
         )}

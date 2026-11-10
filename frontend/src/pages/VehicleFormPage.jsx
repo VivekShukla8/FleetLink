@@ -13,6 +13,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
+import AppIcon, { VehicleIcon } from '../components/AppIcon.jsx'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -38,10 +39,10 @@ const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 const VEHICLE_CATEGORIES = ['CAR', 'BIKE', 'SCOOTER', 'BICYCLE']
 
 const CATEGORY_LABELS = {
-  CAR: '🚗 Car',
-  BIKE: '🏍️ Bike',
-  SCOOTER: '🛵 Scooter',
-  BICYCLE: '🚲 Bicycle',
+  CAR: 'Car',
+  BIKE: 'Bike',
+  SCOOTER: 'Scooter',
+  BICYCLE: 'Bicycle',
 }
 
 const VEHICLE_SPECS_CONFIG = {
@@ -404,7 +405,7 @@ function VehicleFormPage() {
       <div className="vehicle-form-container">
         {/* ── Header ──────────────────────────────────── */}
         <div className="fleet-form-header">
-          <div className="fleet-form-icon">{isEditMode ? '✏️' : '🚗'}</div>
+          <div className="fleet-form-icon"><AppIcon name={isEditMode ? 'edit' : 'car'} size={30} /></div>
           <h1>{isEditMode ? 'Edit Vehicle' : 'Add New Vehicle'}</h1>
           <p>{isEditMode ? 'Update the details below.' : 'Fill in the details to list a new vehicle.'}</p>
         </div>
@@ -412,7 +413,7 @@ function VehicleFormPage() {
         {/* ── Banner Error ────────────────────────────── */}
         {bannerError && (
           <div className="fleet-error-banner">
-            <span className="fleet-error-icon">⚠️</span>
+            <span className="fleet-error-icon"><AppIcon name="alert" size={18} /></span>
             <span>{bannerError}</span>
           </div>
         )}
@@ -421,7 +422,7 @@ function VehicleFormPage() {
         {showCategoryWarning && (
           <div className="category-warning-overlay">
             <div className="category-warning-modal">
-              <h3>⚠️ Change Category?</h3>
+              <h3><AppIcon name="alert" size={19} /> Change category?</h3>
               <p>
                 Switching from <strong>{CATEGORY_LABELS[category]}</strong> to{' '}
                 <strong>{CATEGORY_LABELS[pendingCategory]}</strong> will{' '}
@@ -452,7 +453,7 @@ function VehicleFormPage() {
                   className={`category-chip ${category === cat ? 'category-chip-active' : ''}`}
                   onClick={() => handleCategoryChange(cat)}
                 >
-                  {CATEGORY_LABELS[cat]}
+                  <VehicleIcon category={cat} size={17} /> {CATEGORY_LABELS[cat]}
                 </button>
               ))}
             </div>
@@ -515,7 +516,7 @@ function VehicleFormPage() {
 
           {/* ── Price Fields ──────────────────────────── */}
           <fieldset className="specs-fieldset">
-            <legend>💰 Pricing</legend>
+            <legend><AppIcon name="wallet" size={16} /> Pricing</legend>
             <div className="specs-grid">
               {PRICE_FIELDS.map((pf) => (
                 <div key={pf.name} className="form-group">
@@ -548,7 +549,7 @@ function VehicleFormPage() {
             >
               {isSubmitting
                 ? (isEditMode ? 'Saving...' : 'Creating...')
-                : (isEditMode ? '💾 Save Changes' : '+ Add Vehicle')}
+                : (isEditMode ? <><AppIcon name="check" size={17} /> Save changes</> : <><AppIcon name="plus" size={17} /> Add vehicle</>)}
             </button>
           </div>
         </form>

@@ -13,33 +13,38 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useAuth, useUser } from '@clerk/clerk-react'
-import { getVehicleImage, CATEGORY_EMOJI } from '../utils/vehicleImage'
+import { getVehicleImage } from '../utils/vehicleImage'
+import AppIcon, { VehicleIcon } from '../components/AppIcon.jsx'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
-// CATEGORY_EMOJI imported from ../utils/vehicleImage
-
 const CATEGORY_COLORS = {
-  CAR: { bg: '#DBEAFE', color: '#1E40AF' },
-  BIKE: { bg: '#EDE9FE', color: '#6D28D9' },
-  SCOOTER: { bg: '#D1FAE5', color: '#065F46' },
-  BICYCLE: { bg: '#FEF3C7', color: '#92400E' },
+  CAR: { bg: '#F0E9FF', color: '#6D28D9' },
+  BIKE: { bg: '#F0E9FF', color: '#6D28D9' },
+  SCOOTER: { bg: '#F0E9FF', color: '#6D28D9' },
+  BICYCLE: { bg: '#F0E9FF', color: '#6D28D9' },
 }
 
 // ── Spec label map for human-readable display ────────────
 const SPEC_LABELS = {
-  seats: '🪑 Seats',
-  transmission: '⚙️ Transmission',
-  fuelType: '⛽ Fuel Type',
-  airConditioning: '❄️ A/C',
-  bootSpaceLiters: '🧳 Boot Space',
-  engineCC: '🔧 Engine',
-  abs: '🛡️ ABS',
-  helmetIncluded: '⛑️ Helmet',
-  type: '🚲 Type',
-  gearCount: '⚙️ Gears',
-  frameSize: '📐 Frame Size',
-  batteryRangeKm: '🔋 Battery Range',
+  seats: 'Seats',
+  transmission: 'Transmission',
+  fuelType: 'Fuel type',
+  airConditioning: 'Air conditioning',
+  bootSpaceLiters: 'Boot space',
+  engineCC: 'Engine',
+  abs: 'ABS',
+  helmetIncluded: 'Helmet included',
+  type: 'Type',
+  gearCount: 'Gears',
+  frameSize: 'Frame size',
+  batteryRangeKm: 'Battery range',
+}
+
+const SPEC_ICONS = {
+  seats: 'seat', transmission: 'settings', fuelType: 'wrench', airConditioning: 'settings',
+  bootSpaceLiters: 'grid', engineCC: 'settings', abs: 'shield', helmetIncluded: 'shield',
+  type: 'bicycle', gearCount: 'settings', frameSize: 'settings', batteryRangeKm: 'battery',
 }
 
 // ── Razorpay script loader (lazy, one-time) ──────────────
@@ -195,6 +200,7 @@ function VehicleDetailPage() {
     return Object.entries(vehicle.specs)
       .filter(([, val]) => val !== null && val !== undefined && val !== '' && val !== false)
       .map(([key, val]) => ({
+        key,
         label: SPEC_LABELS[key] || key,
         value: val === true ? 'Yes' : typeof val === 'number' ? `${val}${key.includes('Liters') ? 'L' : key.includes('CC') || key === 'engineCC' ? 'cc' : key.includes('Km') ? ' km' : ''}` : String(val),
       }))
@@ -412,7 +418,7 @@ function VehicleDetailPage() {
     return (
       <div className="vd-page">
         <div className="vd-error-state">
-          <div className="vd-error-icon">😕</div>
+          <div className="vd-error-icon"><AppIcon name="alert" size={30} /></div>
           <h2>Vehicle Not Found</h2>
           <p>{fetchError || 'This vehicle may have been removed.'}</p>
           <Link to="/vehicles" className="btn btn-primary">← Browse Vehicles</Link>
@@ -428,7 +434,7 @@ function VehicleDetailPage() {
     return (
       <div className="vd-page">
         <div className="vd-confirming">
-          <div className="vd-confirming-icon">✅</div>
+          <div className="vd-confirming-icon"><AppIcon name="check" size={30} /></div>
           <h2>Payment Submitted!</h2>
           <p>Your payment is being confirmed. You'll be redirected to your booking shortly...</p>
           <div className="spinner" style={{ marginTop: '1rem' }} />
@@ -463,11 +469,11 @@ function VehicleDetailPage() {
                 className="vd-cat-badge"
                 style={{ background: catColor.bg, color: catColor.color }}
               >
-                {CATEGORY_EMOJI[vehicle.category]} {vehicle.category}
+                <VehicleIcon category={vehicle.category} size={15} /> {vehicle.category}
               </span>
               <h1 className="vd-title">{vehicle.brand} {vehicle.model}</h1>
               {vehicle.store && (
-                <p className="vd-store">📍 {vehicle.store.name} — {vehicle.store.address}</p>
+                <p className="vd-store"><AppIcon name="pin" size={15} /> {vehicle.store.name} — {vehicle.store.address}</p>
               )}
             </div>
 
@@ -478,7 +484,7 @@ function VehicleDetailPage() {
                 <div className="vd-specs-grid">
                   {specEntries.map((spec) => (
                     <div key={spec.label} className="vd-spec-item">
-                      <span className="vd-spec-label">{spec.label}</span>
+                      <span className="vd-spec-label"><AppIcon name={SPEC_ICONS[spec.key] || 'settings'} size={14} /> {spec.label}</span>
                       <span className="vd-spec-value">{spec.value}</span>
                     </div>
                   ))}
@@ -525,7 +531,7 @@ function VehicleDetailPage() {
             {/* Date pickers */}
             <div className="vd-dates">
               <div className="form-group">
-                <label htmlFor="startDate">📅 Pickup Date</label>
+                <label htmlFor="startDate"><AppIcon name="calendar" size={15} /> Pickup date</label>
                 <input
                   id="startDate"
                   type="date"
@@ -536,7 +542,7 @@ function VehicleDetailPage() {
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="endDate">📅 Return Date</label>
+                <label htmlFor="endDate"><AppIcon name="calendar" size={15} /> Return date</label>
                 <input
                   id="endDate"
                   type="date"
@@ -553,7 +559,7 @@ function VehicleDetailPage() {
             {/* Conflict info */}
             {conflictInfo && (
               <div className="vd-conflict-banner">
-                <span>⚠️</span>
+                <span><AppIcon name="alert" size={18} /></span>
                 <div>
                   <strong>{pendingBookingId ? 'You have a pending booking' : 'Dates unavailable'}</strong>
                   <p>{conflictInfo}</p>
@@ -571,7 +577,7 @@ function VehicleDetailPage() {
             {/* Price preview */}
             {pricePreview && !dateError && (
               <div className="vd-price-preview">
-                <h4>Price Estimate</h4>
+                <h4><AppIcon name="wallet" size={16} /> Price estimate</h4>
                 <div className="vd-breakdown">
                   {pricePreview.breakdown.map((item, i) => (
                     <div key={i} className="vd-breakdown-row">
@@ -601,7 +607,7 @@ function VehicleDetailPage() {
             {/* Booking error */}
             {bookingError && !conflictInfo && (
               <div className="vd-booking-error">
-                ⚠️ {bookingError}
+                <AppIcon name="alert" size={16} /> {bookingError}
               </div>
             )}
 
@@ -611,16 +617,16 @@ function VehicleDetailPage() {
               onClick={handleBookNow}
               disabled={bookingState !== 'idle' || !!dateError}
             >
-              {bookingState === 'idle' && (isSignedIn ? '🔒 Book Now' : '🔑 Sign in to Book')}
-              {bookingState === 'booking' && '⏳ Creating booking...'}
-              {bookingState === 'resuming' && '🔄 Resuming previous booking...'}
-              {bookingState === 'paying' && '⏳ Preparing payment...'}
-              {bookingState === 'checkout' && '💳 Opening checkout...'}
+              {bookingState === 'idle' && <><AppIcon name={isSignedIn ? 'shield' : 'user'} size={17} /> {isSignedIn ? 'Book now' : 'Sign in to book'}</>}
+              {bookingState === 'booking' && <><AppIcon name="clock" size={17} /> Creating booking...</>}
+              {bookingState === 'resuming' && <><AppIcon name="refresh" size={17} /> Resuming previous booking...</>}
+              {bookingState === 'paying' && <><AppIcon name="clock" size={17} /> Preparing payment...</>}
+              {bookingState === 'checkout' && <><AppIcon name="wallet" size={17} /> Opening checkout...</>}
             </button>
 
             {vehicle.status !== 'AVAILABLE' && (
               <div className="vd-unavailable-badge">
-                🚫 This vehicle is currently under maintenance
+                <><AppIcon name="alert" size={16} /> This vehicle is currently under maintenance</>
               </div>
             )}
           </div>

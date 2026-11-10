@@ -10,10 +10,10 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@clerk/clerk-react'
+import AppIcon, { VehicleIcon } from '../components/AppIcon.jsx'
 import {
   BOOKING_STATUS_STYLES,
   PAYMENT_STATUS_STYLES,
-  CATEGORY_EMOJI,
   formatDateRange,
   formatPrice,
   getDurationDays,
@@ -135,7 +135,7 @@ function StoreBookingsPage() {
             <option value="">All Vehicles</option>
             {vehicles.map((v) => (
               <option key={v.id} value={v.id}>
-                {CATEGORY_EMOJI[v.category] || '🚗'} {v.brand} {v.model}
+                {v.brand} {v.model}
               </option>
             ))}
           </select>
@@ -145,7 +145,7 @@ function StoreBookingsPage() {
       {/* ── Error banner ────────────────────────────────── */}
       {error && (
         <div className="sb-error">
-          <span>⚠️</span> {error}
+          <span><AppIcon name="alert" size={18} /></span> {error}
           <button className="sb-error-dismiss" onClick={() => setError(null)}>✕</button>
         </div>
       )}
@@ -161,7 +161,7 @@ function StoreBookingsPage() {
       {/* ── Empty state ─────────────────────────────────── */}
       {!isLoading && !error && bookings.length === 0 && (
         <div className="sb-empty">
-          <div className="sb-empty-icon">📋</div>
+          <div className="sb-empty-icon"><AppIcon name="calendar" size={30} /></div>
           <h3>No bookings found</h3>
           <p>
             {statusFilter || vehicleFilter
@@ -216,7 +216,6 @@ function StoreBookingCard({ booking }) {
   const paymentStyle = payment
     ? (PAYMENT_STATUS_STYLES[payment.status] || PAYMENT_STATUS_STYLES.PENDING)
     : null
-  const emoji = CATEGORY_EMOJI[vehicle?.category] || '🚗'
   const duration = getDurationDays(booking.startDate, booking.endDate)
 
   return (
@@ -246,13 +245,13 @@ function StoreBookingCard({ booking }) {
       {/* Vehicle + dates */}
       <div className="sb-card-details">
         <div className="sb-card-detail-row">
-          <span className="sb-card-label">🚗 Vehicle</span>
+          <span className="sb-card-label"><VehicleIcon category={vehicle?.category} size={14} /> Vehicle</span>
           <span className="sb-card-value">
-            {emoji} {vehicle?.brand} {vehicle?.model}
+            {vehicle?.brand} {vehicle?.model}
           </span>
         </div>
         <div className="sb-card-detail-row">
-          <span className="sb-card-label">📅 Dates</span>
+          <span className="sb-card-label"><AppIcon name="calendar" size={14} /> Dates</span>
           <span className="sb-card-value">
             {formatDateRange(booking.startDate, booking.endDate)}
             <span className="sb-card-duration"> ({duration}d)</span>

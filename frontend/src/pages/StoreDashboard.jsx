@@ -11,7 +11,8 @@ import { useState, useEffect, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
 import { useLocalUser } from '../context/UserContext.jsx'
-import { getVehicleImage, CATEGORY_EMOJI } from '../utils/vehicleImage'
+import { getVehicleImage } from '../utils/vehicleImage'
+import AppIcon, { VehicleIcon } from '../components/AppIcon.jsx'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -121,21 +122,21 @@ function StoreDashboard() {
       <div className="dash-welcome">
         <div>
           <h1 className="dash-welcome-title">
-            👋 Welcome back, {firstName}!
+            <AppIcon name="riders" size={24} /> Welcome back, {firstName}!
           </h1>
           <p className="dash-welcome-sub">
             Manage your fleet, vehicles, and bookings from one place.
           </p>
         </div>
         <Link to="/store/vehicles/new" className="dash-add-btn">
-          🚗 Add Vehicle
+          <AppIcon name="plus" size={17} /> Add vehicle
         </Link>
       </div>
 
       {/* ── Row 2: Stats Cards ─────────────────────────── */}
       <div className="dash-stats">
         <div className="dash-stat-card">
-          <div className="dash-stat-icon" style={{ background: '#EDE9FE', color: '#7C3AED' }}>🚗</div>
+          <div className="dash-stat-icon"><AppIcon name="car" size={23} /></div>
           <div className="dash-stat-info">
             <span className="dash-stat-value">{totalVehicles}</span>
             <span className="dash-stat-label">Total Vehicles</span>
@@ -143,7 +144,7 @@ function StoreDashboard() {
         </div>
 
         <div className="dash-stat-card">
-          <div className="dash-stat-icon" style={{ background: '#DBEAFE', color: '#2563EB' }}>📅</div>
+          <div className="dash-stat-icon"><AppIcon name="calendar" size={23} /></div>
           <div className="dash-stat-info">
             <span className="dash-stat-value">0</span>
             <span className="dash-stat-label">Active Bookings</span>
@@ -151,7 +152,7 @@ function StoreDashboard() {
         </div>
 
         <div className="dash-stat-card">
-          <div className="dash-stat-icon" style={{ background: '#D1FAE5', color: '#059669' }}>✅</div>
+          <div className="dash-stat-icon"><AppIcon name="check" size={23} /></div>
           <div className="dash-stat-info">
             <span className="dash-stat-value">0</span>
             <span className="dash-stat-label">Completed Bookings</span>
@@ -159,7 +160,7 @@ function StoreDashboard() {
         </div>
 
         <div className="dash-stat-card">
-          <div className="dash-stat-icon" style={{ background: '#FEF3C7', color: '#D97706' }}>₹</div>
+          <div className="dash-stat-icon"><AppIcon name="wallet" size={23} /></div>
           <div className="dash-stat-info">
             <span className="dash-stat-value">₹0</span>
             <span className="dash-stat-label">Total Revenue</span>
@@ -173,7 +174,7 @@ function StoreDashboard() {
         <div className="dash-panel">
           <div className="dash-panel-header">
             <h2>
-              🚗 Your Vehicles
+              <AppIcon name="car" size={19} /> Your vehicles
               <span className="dash-badge">{totalVehicles} vehicle{totalVehicles !== 1 ? 's' : ''}</span>
             </h2>
             {vehicles.length > 0 && (
@@ -191,7 +192,7 @@ function StoreDashboard() {
           {/* Error */}
           {error && (
             <div className="fleet-error-banner">
-              <span>⚠️</span> {error}
+              <span><AppIcon name="alert" size={18} /></span> {error}
               <button onClick={() => fetchVehicles()} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: '#991B1B', cursor: 'pointer', fontWeight: 600 }}>
                 Retry
               </button>
@@ -201,7 +202,7 @@ function StoreDashboard() {
           {/* Empty */}
           {!isLoading && !error && vehicles.length === 0 && (
             <div className="dash-empty">
-              <p>🚘 No vehicles yet. Add your first vehicle!</p>
+              <p>No vehicles yet. Add your first vehicle.</p>
               <Link to="/store/vehicles/new" className="btn btn-primary" style={{ marginTop: '0.75rem' }}>
                 + Add Vehicle
               </Link>
@@ -225,31 +226,40 @@ function StoreDashboard() {
                         className="dash-vehicle-status"
                         style={{ background: statusStyle.bg, color: statusStyle.color }}
                       >
-                        ● {statusStyle.label}
+                        <span className="dash-status-dot" aria-hidden="true" /> {statusStyle.label}
                       </span>
-                      <button className="dash-vehicle-menu">⋯</button>
+                      <button
+                        type="button"
+                        className="dash-vehicle-menu"
+                        aria-label={`More actions for ${vehicle.brand} ${vehicle.model}`}
+                      >
+                        <AppIcon name="more" size={17} />
+                      </button>
                     </div>
 
                     <div className="dash-vehicle-body">
                       <h3 className="dash-vehicle-name">{vehicle.brand} {vehicle.model}</h3>
                       <div className="dash-vehicle-meta">
-                        <span>{CATEGORY_EMOJI[vehicle.category] || '🚗'} {vehicle.category}</span>
+                        <span><VehicleIcon category={vehicle.category} size={14} /> {vehicle.category}</span>
                         {store && (
-                          <span>📍 {store.name}<br/><small>{store.address}</small></span>
+                          <span className="dash-store-location">
+                            <AppIcon name="pin" size={14} />
+                            <span>{store.name}<small>{store.address}</small></span>
+                          </span>
                         )}
                       </div>
 
                       <div className="dash-vehicle-prices">
                         <div>
-                          <span className="price-label">📅 Daily</span>
+                          <span className="price-label"><AppIcon name="calendar" size={13} /> Daily</span>
                           <span className="price-value">₹{vehicle.dailyPrice?.toLocaleString()}</span>
                         </div>
                         <div>
-                          <span className="price-label">📅 Weekly</span>
+                          <span className="price-label"><AppIcon name="calendar" size={13} /> Weekly</span>
                           <span className="price-value">₹{vehicle.weeklyPrice?.toLocaleString()}</span>
                         </div>
                         <div>
-                          <span className="price-label">📅 Monthly</span>
+                          <span className="price-label"><AppIcon name="calendar" size={13} /> Monthly</span>
                           <span className="price-value">₹{vehicle.monthlyPrice?.toLocaleString()}</span>
                         </div>
                       </div>
@@ -259,14 +269,14 @@ function StoreDashboard() {
                           className="dash-btn-edit"
                           onClick={() => navigate(`/store/vehicles/${vehicle.id}/edit`)}
                         >
-                          ✏️ Edit
+                          <AppIcon name="edit" size={15} /> Edit
                         </button>
                         <button
                           className="dash-btn-delete"
                           onClick={() => handleDelete(vehicle.id, `${vehicle.brand} ${vehicle.model}`)}
                           disabled={deletingId === vehicle.id}
                         >
-                          {deletingId === vehicle.id ? '...' : '🗑️ Delete'}
+                          {deletingId === vehicle.id ? '...' : <><AppIcon name="trash" size={15} /> Delete</>}
                         </button>
                       </div>
                     </div>
@@ -297,23 +307,23 @@ function StoreDashboard() {
           {/* Quick Actions */}
           <div className="dash-panel">
             <div className="dash-panel-header">
-              <h2>⚡ Quick Actions</h2>
+              <h2><AppIcon name="spark" size={18} /> Quick actions</h2>
             </div>
             <div className="dash-quick-actions">
               <Link to="/store/vehicles/new" className="dash-action-card">
-                <span className="dash-action-icon">🚗</span>
+                <span className="dash-action-icon"><AppIcon name="car" size={23} /></span>
                 <span>Add Vehicle</span>
               </Link>
               <Link to="/store/bookings" className="dash-action-card">
-                <span className="dash-action-icon">📅</span>
+                <span className="dash-action-icon"><AppIcon name="calendar" size={23} /></span>
                 <span>View Bookings</span>
               </Link>
               <Link to="/vehicles" className="dash-action-card">
-                <span className="dash-action-icon">🔍</span>
+                <span className="dash-action-icon"><AppIcon name="search" size={23} /></span>
                 <span>Browse Vehicles</span>
               </Link>
               <Link to="/my-bookings" className="dash-action-card">
-                <span className="dash-action-icon">📋</span>
+                <span className="dash-action-icon"><AppIcon name="list" size={23} /></span>
                 <span>My Bookings</span>
               </Link>
             </div>
@@ -322,7 +332,7 @@ function StoreDashboard() {
           {/* Recent Bookings */}
           <div className="dash-panel">
             <div className="dash-panel-header">
-              <h2>🕐 Recent Bookings</h2>
+              <h2><AppIcon name="clock" size={18} /> Recent bookings</h2>
               <Link to="/store/bookings" className="dash-view-all">View All →</Link>
             </div>
             <div className="dash-empty">
@@ -331,7 +341,7 @@ function StoreDashboard() {
                 Bookings made for your vehicles will appear here.
               </p>
               <Link to="/vehicles" className="dash-browse-btn">
-                🔍 Browse Vehicles
+                <AppIcon name="search" size={15} /> Browse vehicles
               </Link>
             </div>
           </div>

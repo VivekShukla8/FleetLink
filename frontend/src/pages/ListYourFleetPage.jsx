@@ -15,6 +15,7 @@ import { useState } from 'react'
 import { useNavigate, Navigate } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
 import { useLocalUser } from '../context/UserContext.jsx'
+import AppIcon from '../components/AppIcon.jsx'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -142,7 +143,7 @@ function ListYourFleetPage() {
     <div className="fleet-page">
       <div className="fleet-form-container">
         <div className="fleet-form-header">
-          <div className="fleet-form-icon">🏪</div>
+          <div className="fleet-form-icon"><AppIcon name="store" size={30} /></div>
           <h1>List Your Fleet</h1>
           <p>
             Create your rental store and start listing vehicles.
@@ -152,7 +153,7 @@ function ListYourFleetPage() {
 
         {submitError && (
           <div className="fleet-error-banner">
-            <span className="fleet-error-icon">⚠️</span>
+            <span className="fleet-error-icon"><AppIcon name="alert" size={18} /></span>
             {submitError}
           </div>
         )}

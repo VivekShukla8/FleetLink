@@ -14,11 +14,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
+import AppIcon from '../components/AppIcon.jsx'
 import {
   BOOKING_STATUS_STYLES,
   PAYMENT_STATUS_STYLES,
   DEPOSIT_STATUS_STYLES,
-  CATEGORY_EMOJI,
   getVehicleImage,
   formatDate,
   formatDateRange,
@@ -156,7 +156,7 @@ function BookingDetailPage() {
     return (
       <div className="bd-page">
         <div className="bd-error-full">
-          <span className="bd-error-icon">⚠️</span>
+          <span className="bd-error-icon"><AppIcon name="alert" size={26} /></span>
           <h2>Unable to load booking</h2>
           <p>{error}</p>
           <Link to="/my-bookings" className="bd-back-btn">← Back to My Bookings</Link>
@@ -172,7 +172,6 @@ function BookingDetailPage() {
   const store = vehicle?.store
   const payment = booking.payment
   const statusStyle = BOOKING_STATUS_STYLES[booking.status] || BOOKING_STATUS_STYLES.PENDING
-  const emoji = CATEGORY_EMOJI[vehicle?.category] || '🚗'
   const duration = getDurationDays(booking.startDate, booking.endDate)
 
   // Price breakdown
@@ -196,7 +195,7 @@ function BookingDetailPage() {
       {/* ── PAYMENT_PENDING banner ────────────────────────── */}
       {isPaymentPending && (
         <div className="bd-pending-banner">
-          <div className="bd-pending-icon">⏳</div>
+          <div className="bd-pending-icon"><AppIcon name="clock" size={22} /></div>
           <div className="bd-pending-text">
             <strong>Payment is being processed</strong>
             <p>
@@ -210,7 +209,7 @@ function BookingDetailPage() {
             onClick={handleManualRefresh}
             disabled={isRefreshing}
           >
-            {isRefreshing ? 'Checking…' : '🔄 Refresh Status'}
+            <AppIcon name="refresh" size={16} /> {isRefreshing ? 'Checking…' : 'Refresh status'}
           </button>
         </div>
       )}
@@ -234,7 +233,7 @@ function BookingDetailPage() {
 
             {store && (
               <div className="bd-store-info">
-                <h4 className="bd-store-heading">📍 Rental Store</h4>
+                <h4 className="bd-store-heading"><AppIcon name="pin" size={16} /> Rental store</h4>
                 <p className="bd-store-name">{store.name}</p>
                 {store.address && (
                   <p className="bd-store-address">{store.address}</p>
@@ -245,7 +244,7 @@ function BookingDetailPage() {
 
           {/* ── Dates section ──────────────────────────────── */}
           <div className="bd-dates-card">
-            <h4 className="bd-section-title">📅 Rental Period</h4>
+            <h4 className="bd-section-title"><AppIcon name="calendar" size={17} /> Rental period</h4>
             <div className="bd-date-grid">
               <div className="bd-date-item">
                 <span className="bd-date-label">Pick-up</span>
@@ -295,7 +294,7 @@ function BookingDetailPage() {
 
           {/* ── Price breakdown ────────────────────────────── */}
           <div className="bd-price-card">
-            <h4 className="bd-section-title">💰 Price Breakdown</h4>
+            <h4 className="bd-section-title"><AppIcon name="wallet" size={17} /> Price breakdown</h4>
             <div className="bd-price-rows">
               <div className="bd-price-row">
                 <span>Rental cost</span>
@@ -332,7 +331,7 @@ function BookingDetailPage() {
           {/* ── Payment info ──────────────────────────────── */}
           {payment && (
             <div className="bd-payment-card">
-              <h4 className="bd-section-title">💳 Payment</h4>
+              <h4 className="bd-section-title"><AppIcon name="wallet" size={17} /> Payment</h4>
               <div className="bd-payment-rows">
                 <div className="bd-payment-row">
                   <span>Status</span>
